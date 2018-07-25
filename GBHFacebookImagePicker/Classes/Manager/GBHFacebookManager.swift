@@ -147,8 +147,8 @@ class GBHFacebookManager {
             return
         }
         var path = id == GBHFacebookManager.idTaggedPhotosAlbum
-            ? "/me/photos?fields=picture,source,id"
-            : "/\(id)/photos?fields=picture,source,id"
+            ? "/me/photos?fields=picture,source,id,images"
+            : "/\(id)/photos?fields=picture,source,id,images"
         if let afterPath = after {
             path = path.appendingFormat("&after=%@", afterPath)
         }
@@ -206,8 +206,9 @@ class GBHFacebookManager {
                 if let photoDic = photo as? [String: AnyObject],
                     let id = photoDic["id"] as? String,
                     let picture = photoDic["picture"] as? String,
-                    let source = photoDic["source"] as? String {
-
+                    let images = photoDic["images"] as? [[String: AnyObject]] {
+                    guard images.count > 0 else { return }
+                    guard let source = images[0]["source"] as? String else { return }
                     // Build Picture model
                     let photoObject = GBHFacebookImage(picture: picture,
                                                        imgId: id,
